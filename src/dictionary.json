@@ -1,19 +1,4 @@
 {
-  "light": [
-    "electromagnetic radiation",
-    "not heavy",
-    "not dark"
-  ],
-  "bank": [
-    "financial institution",
-    "edge of a river",
-    "to tilt an airplane"
-  ],
-  "bat": [
-    "flying mammal",
-    "equipment for hitting in sports",
-    "to hit something"
-  ],
   "spring": [
     "season after winter",
     "a coil that bounces",
@@ -24,59 +9,22 @@
     "a music genre",
     "to move back and forth"
   ],
-  "book": [
-    "a collection of pages",
-    "to reserve something",
-    "to record officially"
+  "bank": [
+    "financial institution",
+    "edge of a river",
+    "to tilt an airplane"
+  ],
+  "appleee": [
+    "eee"
   ],
   "cold": [
     "low temperature",
     "a viral illness",
     "emotionally distant"
   ],
-  "watch": [
-    "a device for telling time",
-    "to observe",
-    "a period of duty"
-  ],
-  "match": [
-    "a contest",
-    "a small stick to make fire",
-    "a suitable pair"
-  ],
   "run": [
     "to move quickly on foot",
     "to operate",
     "to manage"
-  ],
-  "star": [
-    "a luminous celestial body",
-    "a famous performer or celebrity",
-    "a symbol used to rate items",
-    "a decorative shape with points",
-    "a body of gas emitting light and heat",
-    "a leading actor or actress",
-    "an object seen in the night sky",
-    "a mark used to indicate importance",
-    "a point in astrology or horoscopes",
-    "a figure used in flags or emblems",
-    "to feature prominently in something",
-    "a person admired for achievements",
-    "a spotlighted individual in a group",
-    "a guide or navigation reference in ancient times"
-  ],
-  "pizza": [
-    "food"
-  ],
-  "aaa123": [
-    "aaaaa"
-  ],
-  "apple": [
-    "xiayizhou",
-    "bro",
-    "brother"
-  ],
-  "pear": [
-    "lsiehn"
   ]
 }

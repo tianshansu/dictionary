@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,12 +21,20 @@ import com.google.gson.reflect.TypeToken;
 import constants.DictionaryConstant;
 import dtos.ServerResponseDTO;
 import entities.DictWord;
+import server.ServerUI;
 
 public class DictionaryService {
 	private String filePath;
 	private ConcurrentHashMap<String, List<String>> dictionary=new ConcurrentHashMap<String, List<String>>();
-	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private final Object fileLock = new Object();
+	private static AtomicInteger currentWordsCount = new AtomicInteger(0);
+	private ServerUI serverUI;
+	
+
+	public void setServerUI(ServerUI serverUI) {
+		this.serverUI = serverUI;
+	}
 
 	//constructor
 	public DictionaryService(String filePath) {
@@ -39,9 +49,14 @@ public class DictionaryService {
 		try {
 			Reader reader=new FileReader(filePath);
 			Type type = new TypeToken<Map<String, List<String>>>() {}.getType();
-			this.dictionary=gson.fromJson(reader, type);
-			
+			//this.dictionary=gson.fromJson(reader, type);
+			Map<String, List<String>> map = gson.fromJson(reader, type);
+		    this.dictionary = new ConcurrentHashMap<>(map); 
+		    reader.close();
+
 		} catch (FileNotFoundException e) {
+			System.out.println("File not found!");
+		}catch(IOException e) {
 			System.out.println("Read file failed!");
 		}
 		
@@ -75,6 +90,11 @@ public class DictionaryService {
 		}
 	}
 	
+	public void initiateWordsCount() {
+		currentWordsCount.set(dictionary.size());
+	    serverUI.updateWordsCount(currentWordsCount.get());
+	}
+	
 	
 	/**
 	 * Add a new word
@@ -100,6 +120,8 @@ public class DictionaryService {
 				writer.flush();
 	            writer.close();
 		        System.out.println("Word add succeed!");
+		        currentWordsCount.incrementAndGet();
+		        serverUI.updateWordsCount(currentWordsCount.get());
 				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.ADD_WORD_SUCCESS,null);
 			}
 		}catch (IOException e) {
@@ -129,6 +151,8 @@ public class DictionaryService {
 				writer.flush();
 	            writer.close();
 		        System.out.println("Word delete succeed!");
+		        currentWordsCount.decrementAndGet();
+		        serverUI.updateWordsCount(currentWordsCount.get());
 				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.DELETE_WORD_SUCCESS,null);
 			}
 		}catch (IOException e) {
@@ -230,6 +254,14 @@ public class DictionaryService {
 			System.out.println("Meaning update failed!");
 			return buildResponse(DictionaryConstant.CODE_FAILED,DictionaryConstant.UPDATE_MEANING_FAILED,null);
 	    }
+	}
+	
+	/**
+	 * display all words in server UI
+	 * @return all words in dictionary
+	 */
+	public Set<String> getAllWords() {
+	    return dictionary.keySet();
 	}
 	
 }

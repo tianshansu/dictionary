@@ -14,17 +14,18 @@ import com.google.gson.reflect.TypeToken;
 
 import dtos.ClientRequestDTO;
 import dtos.ServerResponseDTO;
+import server.Server;
 
 /**
  * Client communicate with the server, client send and receive data from the
  * server
  */
 public class ClientSocketHandler implements Runnable {
-	Socket clientSocket;
-	ClientUI clientUI;
-	DataInputStream is;
-	DataOutputStream os;
-	Gson gson = new Gson();
+	private Socket clientSocket;
+	private ClientUI clientUI;
+	private DataInputStream is;
+	private DataOutputStream os;
+	private Gson gson = new Gson();
 
 	public ClientSocketHandler(Socket clientSocket) {
 		this.clientSocket = clientSocket;
@@ -32,7 +33,7 @@ public class ClientSocketHandler implements Runnable {
 			is = new DataInputStream(clientSocket.getInputStream());
 			os = new DataOutputStream(clientSocket.getOutputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("IOException occurred: " + e.getMessage());
 		}
 	}
 
@@ -40,9 +41,6 @@ public class ClientSocketHandler implements Runnable {
 		this.clientUI = clientUI;
 	}
 
-//	public Socket getClientSocket() {
-//		return this.clientSocket;
-//	}
 
 	@Override
 	public void run() {
@@ -87,8 +85,7 @@ public class ClientSocketHandler implements Runnable {
 				os.writeUTF(jsonStr);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("IOException occurred: " + e.getMessage());
 		}
 
 	}

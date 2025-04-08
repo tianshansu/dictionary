@@ -5,20 +5,29 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.chrono.IsoChronology;
 import java.util.Locale;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JOptionPane;
-
-import constants.ClientConstant;
 import constants.ServerConstant;
-import entities.DictWord;
 import exceptions.PortOutOfRangeException;
 import services.DictionaryService;
 
 
 public class Server {
+	public static AtomicInteger currentUserCount = new AtomicInteger(0);
 	
+	
+
+	public static AtomicInteger getCurrentUserCount() {
+		return currentUserCount;
+	}
+
+
+	public static void setCurrentUserCount(AtomicInteger currentUserCount) {
+		Server.currentUserCount = currentUserCount;
+	}
+
+
 	public static void main(String[] args){
 		ServerSocket serverSocket=null;
 		int portNum=0;
@@ -47,9 +56,7 @@ public class Server {
 	    		exitWithErrorMsg(ServerConstant.fILE_NOT_EXSIST);
 	    	}
 	    	
-	    	//new a dictionary service and pass the file path to it
 	    	dictionaryService=new DictionaryService(filePath);
-	    	
 	    	
 	    }catch(NumberFormatException numberFormatException) {
 	    	exitWithErrorMsg(ServerConstant.PORT_NUMBER_INCORRECT_FORMAT);
@@ -57,6 +64,13 @@ public class Server {
 	    	exitWithErrorMsg(ServerConstant.PORT_NUMBER_INCORRECT_RANGE);
 	    }
 	    
+	  //new a dictionary service and pass the file path to it
+    	
+    	ServerUI serverUI=new ServerUI(dictionaryService);
+ 	    serverUI.start();
+ 	    
+ 	    dictionaryService.setServerUI(serverUI); //pass server UI to service (for updating UI)
+ 	    dictionaryService.initiateWordsCount();
 	    
 		//receive connections from the clients
 		try {
@@ -66,19 +80,21 @@ public class Server {
 				Socket clientSocket=serverSocket.accept(); // wait and accept a connection
 				ClientConnectionHandler clientConnectionHandler=new ClientConnectionHandler(clientSocket);
 				clientConnectionHandler.setDictionaryService(dictionaryService);
+				clientConnectionHandler.setServerUI(serverUI);
 				Thread t = new Thread(clientConnectionHandler); //when the connection is established, create a new thread for that client
                 t.start(); //start the thread
-      
-                
+                currentUserCount.incrementAndGet(); //add the user count
+                serverUI.updateUserCount(currentUserCount.get());
 			}
 		} catch (IOException e) {
-			System.out.println("Client disconnected!");
+			System.out.println("IOException occurred: " + e.getMessage());
+			currentUserCount.decrementAndGet(); //decrease the user count
+            serverUI.updateUserCount(currentUserCount.get());
 		}finally {
 			try {
 				serverSocket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("IOException occurred: " + e.getMessage());
 			}
 		}
 	}

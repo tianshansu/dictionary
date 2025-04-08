@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.spi.AbstractResourceBundleProvider;
 
 import com.google.gson.Gson;
@@ -21,11 +22,16 @@ import services.DictionaryService;
  * Client Connection, server send and receive data from the clients
  */
 public class ClientConnectionHandler implements Runnable {
-	DataInputStream is;
-	DataOutputStream os;
-	Socket clientSocket;// get client socket to send and receive data from the server
-	Gson gson = new Gson();
-	DictionaryService dictionaryService;
+	private DataInputStream is;
+	private DataOutputStream os;
+	private Socket clientSocket;// get client socket to send and receive data from the server
+	private Gson gson = new Gson();
+	private DictionaryService dictionaryService;
+	private ServerUI serverUI;
+
+	public void setServerUI(ServerUI serverUI) {
+		this.serverUI = serverUI;
+	}
 
 	public ClientConnectionHandler(Socket socket) {
 		this.clientSocket = socket;
@@ -67,7 +73,6 @@ public class ClientConnectionHandler implements Runnable {
 					case SEARCH_WORD: {
 						// if the client wants to search a word, call searchWord method in service
 						serverResponseDTO = dictionaryService.searchWord(word);
-						
 						break;
 					}
 					case ADD_WORD:{
@@ -108,16 +113,19 @@ public class ClientConnectionHandler implements Runnable {
 
 		} catch (SocketException socketException) {
 			System.out.println("Client disconnected: " + socketException.getMessage());
+			Server.currentUserCount.decrementAndGet();//decrease user count
+			serverUI.updateUserCount(Server.currentUserCount.get());
 		} catch (IOException ioException) {
-			ioException.printStackTrace();
+			System.out.println("IOException occurred: " + ioException.getMessage());
 		} finally {
 			try {
 				// close all resources
 				is.close();
 				os.close();
 				clientSocket.close();
+
 			} catch (IOException ioException) {
-				ioException.printStackTrace();
+				System.out.println("Resource close failed"+ioException.getMessage());
 			}
 		}
 
