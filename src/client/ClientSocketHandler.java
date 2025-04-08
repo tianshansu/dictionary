@@ -50,8 +50,7 @@ public class ClientSocketHandler implements Runnable {
 		// keep reading the information send by the server
 		try {
 			while (true) {
-				// read from the is and parse the response to string, then send it to UI to
-				// display
+				// read from the is and parse the response to string, then send it to UI to display
 				String serverResponse = is.readUTF();
 				ServerResponseDTO serverResponseDTO = gson.fromJson(serverResponse, ServerResponseDTO.class);
 				clientUI.showResult(serverResponseDTO); // once get the response from server, display it in the UI

@@ -358,20 +358,70 @@ public class ClientUI {
 		btnOperation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String word=textFieldInputWord.getText();
-				ClientRequestDTO clientRequestDTO=new ClientRequestDTO();
-				clientRequestDTO.setOperationType(currentOperationType); //get current operation type and pass to server
-				clientRequestDTO.setWord(word);
-				
-				//pass the meanings of the word to server
-				clientRequestDTO.setMeanings(textAreaMeaningsInput.getText());
-				//pass the old and new meaning to server
-				clientRequestDTO.setOldMeaning(textAreaOldMeaningInput.getText());
-				clientRequestDTO.setNewMeaning(textAreaNewMeaningInput.getText());
-				
-				System.out.println("UI sends out the request:"+clientRequestDTO.toString());
-				clientSocketHandler.sendToServer(clientRequestDTO);
-				clearAllText();
-				
+				//send request to server only if the word is in input box
+				if(word==null||word.isEmpty()) {
+					clearAllText();
+					textAreaResult.setText(DictionaryConstant.WORD_CANNOT_BE_EMPTY);
+				}else {
+					ClientRequestDTO clientRequestDTO=new ClientRequestDTO();
+					clientRequestDTO.setOperationType(currentOperationType); //get current operation type and pass to server
+					clientRequestDTO.setWord(word);
+					
+					//check for empty values before sending the request to server
+					switch (currentOperationType) {
+					case ADD_WORD: {
+						//if the meaning box in empty, show failed on UI without send the request to server
+						String meanings=textAreaMeaningsInput.getText();
+						if(meanings==null || meanings.isEmpty()) {
+							clearAllText();
+							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
+							return;
+						}
+						//set the meanings in DTO
+						clientRequestDTO.setMeanings(textAreaMeaningsInput.getText());
+						break;
+						
+					}
+					case ADD_MEANING:{
+						//if the new meaning box in empty, show failed on UI without send the request to server
+						String newMeaning=textAreaNewMeaningInput.getText();
+						if(newMeaning==null || newMeaning.isEmpty()) {
+							clearAllText();
+							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
+							return;
+						}
+						clientRequestDTO.setNewMeaning(textAreaNewMeaningInput.getText());
+						break;
+					}
+					case UPDATE_MEANING:{
+						//if the old meaning or new meaning box in empty, show failed on UI without send the request to server
+						String oldMeaning=textAreaOldMeaningInput.getText();
+						String newMeaning=textAreaNewMeaningInput.getText();
+						if(newMeaning==null || newMeaning.isEmpty()||oldMeaning==null || oldMeaning.isEmpty()) {
+							clearAllText();
+							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
+							return;
+						}
+						//if the user enters the same meaning in old meaning and new meaning box
+						if(oldMeaning.toLowerCase().equals(newMeaning.toLowerCase())){
+							clearAllText();
+							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_SAME);
+							return;
+						}
+						clientRequestDTO.setOldMeaning(textAreaOldMeaningInput.getText());
+						clientRequestDTO.setNewMeaning(textAreaNewMeaningInput.getText());
+						break;
+					}
+					default:
+						clearAllText();
+						textAreaResult.setText(DictionaryConstant.UNKNOWN_ERROR);
+						break;
+					}
+					System.out.println("UI sends out the request:"+clientRequestDTO.toString());
+					clientSocketHandler.sendToServer(clientRequestDTO);
+					clearAllText();
+					
+				}
 			}
 		});
 		
@@ -486,11 +536,14 @@ public class ClientUI {
 	public void showResult(ServerResponseDTO serverResponseDTO) {
 		//if current operation is search, display the meanings send by the server
 		if(currentOperationType==OperationType.SEARCH_WORD) {
-			StringBuilder meanings=new StringBuilder();
-			for (int i = 0; i < serverResponseDTO.getContentList().size(); i++) {
-				meanings.append((i + 1)).append(". ").append(serverResponseDTO.getContentList().get(i)).append("\n");
+			//do string builder only if the search is successful
+			if(serverResponseDTO.getCode()==DictionaryConstant.CODE_SUCCESS) {
+				StringBuilder meanings=new StringBuilder();
+				for (int i = 0; i < serverResponseDTO.getContentList().size(); i++) {
+					meanings.append((i + 1)).append(". ").append(serverResponseDTO.getContentList().get(i)).append("\n");
+				}
+				textAreaMeanings.setText(meanings.toString());
 			}
-			textAreaMeanings.setText(meanings.toString());
 		}
 		
 		//set the msg come from the server

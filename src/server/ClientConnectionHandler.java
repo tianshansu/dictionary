@@ -60,7 +60,7 @@ public class ClientConnectionHandler implements Runnable {
 				word.setWord(clientRequestDTO.getWord());
 				word.setMeanings(clientRequestDTO.getMeanings());
 				word.setOldMeaning(clientRequestDTO.getOldMeaning());
-				word.setNewMeaning(clientRequestDTO.getOldMeaning());
+				word.setNewMeaning(clientRequestDTO.getNewMeaning());
 
 				ServerResponseDTO serverResponseDTO;
 				switch (clientRequestDTO.getOperationType()) {
@@ -75,6 +75,22 @@ public class ClientConnectionHandler implements Runnable {
 						serverResponseDTO=dictionaryService.addWord(word);
 						break;
 						
+					}
+					case DELETE_WORD:{
+						// if the client wants to delete a word, call delete word method in service
+						serverResponseDTO=dictionaryService.deleteWord(word);
+						break;
+						
+					}
+					case ADD_MEANING:{
+						// if the client wants to add a new meaning to a existing word, call add meaning method in service
+						serverResponseDTO=dictionaryService.addMeaning(word);
+						break;
+					}
+					case UPDATE_MEANING:{
+						// if the client wants to update an existing meaning to a existing word, call update meaning method in service
+						serverResponseDTO=dictionaryService.updateMeaning(word);
+						break;
 					}
 					default: {
 						serverResponseDTO=new ServerResponseDTO(DictionaryConstant.CODE_FAILED, DictionaryConstant.UNKNOWN_OPERATION, null);
