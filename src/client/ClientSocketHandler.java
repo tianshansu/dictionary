@@ -83,7 +83,9 @@ public class ClientSocketHandler implements Runnable {
 		try {
 			String jsonStr = gson.toJson(clientRequestDTO);
 			System.out.println("Client socket handler sent request to server:" + clientRequestDTO.toString());
-			os.writeUTF(jsonStr);
+			synchronized (os) {
+				os.writeUTF(jsonStr);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

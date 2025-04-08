@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,8 +22,9 @@ import entities.DictWord;
 
 public class DictionaryService {
 	private String filePath;
-	private Map<String, List<String>> dictionary;
+	private ConcurrentHashMap<String, List<String>> dictionary=new ConcurrentHashMap<String, List<String>>();
 	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private final Object fileLock = new Object();
 
 	//constructor
 	public DictionaryService(String filePath) {
@@ -40,8 +42,7 @@ public class DictionaryService {
 			this.dictionary=gson.fromJson(reader, type);
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Read file failed!");
 		}
 		
 	}
@@ -93,12 +94,14 @@ public class DictionaryService {
 		
         //try to write the new dictionary to file
 		try{
-			FileWriter writer=new FileWriter(filePath);
-			gson.toJson(dictionary, writer);
-			writer.flush();
-            writer.close();
-	        System.out.println("Word add succeed!");
-			return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.ADD_WORD_SUCCESS,null);
+			synchronized (fileLock) {
+				FileWriter writer=new FileWriter(filePath);
+				gson.toJson(dictionary, writer);
+				writer.flush();
+	            writer.close();
+		        System.out.println("Word add succeed!");
+				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.ADD_WORD_SUCCESS,null);
+			}
 		}catch (IOException e) {
 			System.out.println("Word add failed");
 			return buildResponse(DictionaryConstant.CODE_FAILED,DictionaryConstant.ADD_WORD_FAILED,null);
@@ -120,12 +123,14 @@ public class DictionaryService {
 		//try to delete the word and the meaning
 		dictionary.remove(word.getWord());
 		try{
-			FileWriter writer=new FileWriter(filePath);
-			gson.toJson(dictionary, writer);
-			writer.flush();
-            writer.close();
-	        System.out.println("Word delete succeed!");
-			return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.DELETE_WORD_SUCCESS,null);
+			synchronized (fileLock) {
+				FileWriter writer=new FileWriter(filePath);
+				gson.toJson(dictionary, writer);
+				writer.flush();
+	            writer.close();
+		        System.out.println("Word delete succeed!");
+				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.DELETE_WORD_SUCCESS,null);
+			}
 		}catch (IOException e) {
 			System.out.println("Word delete failed!");
 			return buildResponse(DictionaryConstant.CODE_FAILED,DictionaryConstant.DELETE_WORD_FAILED,null);
@@ -162,18 +167,25 @@ public class DictionaryService {
 		meaningList.add(word.getNewMeaning());
 		dictionary.put(word.getWord(), meaningList);
 		try{
-			FileWriter writer=new FileWriter(filePath);
-			gson.toJson(dictionary, writer);
-			writer.flush();
-            writer.close();
-	        System.out.println("Meaning add succeed!");
-			return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.ADD_MEANING_SUCCESS,null);
+			synchronized (fileLock) {
+				FileWriter writer=new FileWriter(filePath);
+				gson.toJson(dictionary, writer);
+				writer.flush();
+	            writer.close();
+		        System.out.println("Meaning add succeed!");
+				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.ADD_MEANING_SUCCESS,null);
+			}
 		}catch (IOException e) {
 			System.out.println("Meaning add failed!");
 			return buildResponse(DictionaryConstant.CODE_FAILED,DictionaryConstant.ADD_MEANING_FAILED,null);
 	    }
 	}
 
+	/**
+	 * Update meaning
+	 * @param word the word to be updated
+	 * @return server response DTO
+	 */
 	public ServerResponseDTO updateMeaning(DictWord word) {
 		//check whether the word exists, only can update the meaning if the word exist in dictionary
 		if(!dictionary.containsKey(word.getWord())) {
@@ -206,12 +218,14 @@ public class DictionaryService {
 		int indexToUpdate = meaningListLC.indexOf(oldMeaningLC);
 	    dictionary.get(word.getWord()).set(indexToUpdate, word.getNewMeaning());
 	    try{
-			FileWriter writer=new FileWriter(filePath);
-			gson.toJson(dictionary, writer);
-			writer.flush();
-            writer.close();
-	        System.out.println("Meaning update succeed!");
-			return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.UPDATE_MEANING_SUCCESS,null);
+	    	synchronized (fileLock) {
+	    		FileWriter writer=new FileWriter(filePath);
+				gson.toJson(dictionary, writer);
+				writer.flush();
+	            writer.close();
+		        System.out.println("Meaning update succeed!");
+				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.UPDATE_MEANING_SUCCESS,null);
+			}
 		}catch (IOException e) {
 			System.out.println("Meaning update failed!");
 			return buildResponse(DictionaryConstant.CODE_FAILED,DictionaryConstant.UPDATE_MEANING_FAILED,null);

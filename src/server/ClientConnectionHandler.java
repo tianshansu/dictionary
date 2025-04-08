@@ -99,7 +99,11 @@ public class ClientConnectionHandler implements Runnable {
 				}
 				
 				String serverResponseDTOJson = gson.toJson(serverResponseDTO);
-				os.writeUTF(serverResponseDTOJson);
+				
+				//add a lock when writing data in output stream
+				synchronized (os) {
+				    os.writeUTF(serverResponseDTOJson);
+				}
 			}
 
 		} catch (SocketException socketException) {

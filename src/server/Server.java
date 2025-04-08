@@ -89,8 +89,6 @@ public class Server {
 	 * @param msg error message
 	 */
 	private static void exitWithErrorMsg(String msg) {
-		//System.out.println(msg);
-		
 		JOptionPane.showMessageDialog(null, msg,"Error",JOptionPane.ERROR_MESSAGE);
 		System.exit(1);
 	}
