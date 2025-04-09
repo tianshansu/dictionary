@@ -13,16 +13,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
 import constants.DictionaryConstant;
 import dtos.ServerResponseDTO;
 import entities.DictWord;
 import server.ServerUI;
 
+/**
+ * Main service, provides all the functions needed
+ */
 public class DictionaryService {
 	private String filePath;
 	private ConcurrentHashMap<String, List<String>> dictionary=new ConcurrentHashMap<String, List<String>>();
@@ -31,12 +32,18 @@ public class DictionaryService {
 	private static AtomicInteger currentWordsCount = new AtomicInteger(0);
 	private ServerUI serverUI;
 	
-
+	/**
+	 * set server UI
+	 * @param serverUI serverUI
+	 */
 	public void setServerUI(ServerUI serverUI) {
 		this.serverUI = serverUI;
 	}
 
-	//constructor
+	/**
+	 * constructor
+	 * @param filePath dictionary file path
+	 */
 	public DictionaryService(String filePath) {
 		this.filePath=filePath;
 		readDictFromFile();
@@ -49,7 +56,6 @@ public class DictionaryService {
 		try {
 			Reader reader=new FileReader(filePath);
 			Type type = new TypeToken<Map<String, List<String>>>() {}.getType();
-			//this.dictionary=gson.fromJson(reader, type);
 			Map<String, List<String>> map = gson.fromJson(reader, type);
 		    this.dictionary = new ConcurrentHashMap<>(map); 
 		    reader.close();
@@ -120,8 +126,9 @@ public class DictionaryService {
 				writer.flush();
 	            writer.close();
 		        System.out.println("Word add succeed!");
-		        currentWordsCount.incrementAndGet();
+		        currentWordsCount.incrementAndGet();//increase word count and update it on server UI
 		        serverUI.updateWordsCount(currentWordsCount.get());
+		        serverUI.refreshWords();//refresh the word list on server UI
 				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.ADD_WORD_SUCCESS,null);
 			}
 		}catch (IOException e) {
@@ -151,8 +158,9 @@ public class DictionaryService {
 				writer.flush();
 	            writer.close();
 		        System.out.println("Word delete succeed!");
-		        currentWordsCount.decrementAndGet();
+		        currentWordsCount.decrementAndGet();//decrease word count and update it on server UI
 		        serverUI.updateWordsCount(currentWordsCount.get());
+		        serverUI.refreshWords();//refresh the word list on server UI
 				return buildResponse(DictionaryConstant.CODE_SUCCESS,DictionaryConstant.DELETE_WORD_SUCCESS,null);
 			}
 		}catch (IOException e) {

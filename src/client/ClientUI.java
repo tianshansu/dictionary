@@ -7,8 +7,6 @@ import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Window.Type;
 import java.awt.Font;
-import java.awt.TextArea;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import constants.DictionaryConstant;
@@ -27,8 +25,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
-
+/**
+ * Client UI
+ */
 public class ClientUI {
 	private ClientSocketHandler clientSocketHandler;
 	private JFrame frmClient;
@@ -49,6 +50,7 @@ public class ClientUI {
 	private JPanel panelMeaningsInput;
 	private JLabel lblMeaningsInput;
 	private JTextArea textAreaMeaningsInput;
+	private JTextField textFieldUserId;
 
 	/**
 	 * Launch the application.
@@ -329,27 +331,47 @@ public class ClientUI {
 					.addGap(20))
 		);
 		panelResult.setLayout(gl_panelResult);
+		
+		textFieldUserId = new JTextField();
+		textFieldUserId.setBackground(new Color(255, 255, 255));
+		textFieldUserId.setEditable(false);
+		textFieldUserId.setColumns(10);
+		textFieldUserId.setBorder(null);
+
+		
+		JLabel lblUserId = new JLabel("ID:");
+		lblUserId.setFont(new Font("Calibri", Font.PLAIN, 12));
 		GroupLayout groupLayout = new GroupLayout(frmClient.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-					.addGap(212)
-					.addGap(30)
-					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 450, GroupLayout.PREFERRED_SIZE))
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(242)
+					.addComponent(toolBar, GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+					.addGap(214))
 				.addComponent(panelParent, GroupLayout.PREFERRED_SIZE, 900, GroupLayout.PREFERRED_SIZE)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(426)
-					.addComponent(lblClient, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(400, Short.MAX_VALUE))
+					.addGap(440)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblClient, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblUserId)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(textFieldUserId, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(423, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(lblClient, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-					.addGap(6)
+					.addGap(16)
+					.addComponent(lblClient, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(textFieldUserId, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblUserId))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(panelParent, GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE))
+					.addComponent(panelParent, GroupLayout.DEFAULT_SIZE, 864, Short.MAX_VALUE))
 		);
 		
 
@@ -524,15 +546,15 @@ public class ClientUI {
 		lblNewMeaning = new JLabel("New Meaning:");
 		lblNewMeaning.setFont(new Font("宋体", Font.PLAIN, 20));
 	
-	
-		
+		//make the search layout the default when the UI starts
 		searchWordPanelLayout();
-		
-		
-		
+
 	}
 	
-	
+	/**
+	 * show response from the server
+	 * @param serverResponseDTO serverResponseDTO
+	 */
 	public void showResult(ServerResponseDTO serverResponseDTO) {
 		//if current operation is search, display the meanings send by the server
 		if(currentOperationType==OperationType.SEARCH_WORD) {
@@ -550,6 +572,13 @@ public class ClientUI {
 		textAreaResult.setText(serverResponseDTO.getMsg());
 	}
 	
+	/**
+	 * display current user id
+	 * @param userId user id
+	 */
+	public void showUserId(String userId) {
+		textFieldUserId.setText(userId);
+	}
 	
 	
 	private void cleanButtonLayout(JToggleButton btn) {

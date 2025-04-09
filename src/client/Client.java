@@ -4,7 +4,6 @@ import java.net.*;
 import java.io.*;
 import constants.*;
 import exceptions.*;
-import server.ClientConnectionHandler;
 
 public class Client {
 
@@ -42,18 +41,19 @@ public class Client {
 	    	//create clientSocketHandler, to send and receive data from server
 	    	ClientSocketHandler clientSocketHandler=new ClientSocketHandler(s1);
 	    	
+	    	//generate the client UI
+	    	ClientUI clientUI=new ClientUI(clientSocketHandler);
+	    	clientSocketHandler.setClientUI(clientUI);
+	    	clientUI.start();
+	    	
 	    	Thread socketHandlerThread = new Thread(clientSocketHandler); //create a new thread for the client socket handler
 	    	socketHandlerThread.start(); //start the thread
 	    	
-	    	//generate the client UI
-	    	ClientUI clientUI=new ClientUI(clientSocketHandler);
-	    	clientUI.start();
-	    	clientSocketHandler.setClientUI(clientUI);
+	    	
 	    }catch(ConnectException connectException) {
 	    	exitWithErrorMsg(ClientConstant.SERVER_ADDRESS_UNAVAILABLE);
 	    }catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+	    	System.out.println("IOException occurred: " + e.getMessage());
 		}
 	}
 	

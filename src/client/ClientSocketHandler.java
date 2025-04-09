@@ -2,23 +2,16 @@ package client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.List;
-
+import javax.swing.JOptionPane;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import dtos.ClientRequestDTO;
 import dtos.ServerResponseDTO;
-import server.Server;
 
 /**
- * Client communicate with the server, client send and receive data from the
- * server
+ * Client communicate with the server, client send and receive data from the server
  */
 public class ClientSocketHandler implements Runnable {
 	private Socket clientSocket;
@@ -27,6 +20,10 @@ public class ClientSocketHandler implements Runnable {
 	private DataOutputStream os;
 	private Gson gson = new Gson();
 
+	/**
+	 * constructor
+	 * @param clientSocket clientSocket
+	 */
 	public ClientSocketHandler(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 		try {
@@ -37,6 +34,10 @@ public class ClientSocketHandler implements Runnable {
 		}
 	}
 
+	/**
+	 * set client UI
+	 * @param clientUI clientUI
+	 */
 	public void setClientUI(ClientUI clientUI) {
 		this.clientUI = clientUI;
 	}
@@ -47,16 +48,28 @@ public class ClientSocketHandler implements Runnable {
 		System.out.println(" this client socket handler is running ... ");
 		// keep reading the information send by the server
 		try {
+			//display current user ID first
+			clientUI.showUserId(is.readUTF());
+			
+			
 			while (true) {
 				// read from the is and parse the response to string, then send it to UI to display
 				String serverResponse = is.readUTF();
+
+				//if server sends out shut down request, exit
+				if ("SERVER_SHUTDOWN".equals(serverResponse)) {
+				    JOptionPane.showMessageDialog(null, "Server has disconnected you.");
+				    System.exit(0);
+				    break;
+				}
+				
 				ServerResponseDTO serverResponseDTO = gson.fromJson(serverResponse, ServerResponseDTO.class);
 				clientUI.showResult(serverResponseDTO); // once get the response from server, display it in the UI
 			}
-		}catch (EOFException eofException) {
-	        System.out.println("Server closed the connection.");
+		
 	    } catch (SocketException socketException) {
-	        System.out.println("Connection reset by server.");
+	        System.out.println("Server shuts down.");
+	        JOptionPane.showMessageDialog(null, "The Server is closed");
 	    } catch (IOException ioException) {
 	    	ioException.printStackTrace();
 		}finally {
@@ -65,6 +78,7 @@ public class ClientSocketHandler implements Runnable {
 				is.close();
 				os.close();
 				clientSocket.close();
+			    System.exit(0);
 			} catch (IOException ioException) {
 				ioException.printStackTrace();
 			}

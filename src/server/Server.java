@@ -3,28 +3,35 @@ package server;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JOptionPane;
 import constants.ServerConstant;
 import exceptions.PortOutOfRangeException;
 import services.DictionaryService;
 
-
+/**
+ * The Server, responsible for handle client connections(start threads)
+ */
 public class Server {
-	public static AtomicInteger currentUserCount = new AtomicInteger(0);
-	
-	
+	public static AtomicInteger currentUserCount = new AtomicInteger(0); //record current user count
+	private static final Map<String, ClientConnectionHandler> userHandlers = new ConcurrentHashMap<>();//record all user connections
+	private static ServerUI serverUI;
 
+	/**
+	 * get current user count
+	 * @return current user count(int)
+	 */
 	public static AtomicInteger getCurrentUserCount() {
 		return currentUserCount;
-	}
-
-
-	public static void setCurrentUserCount(AtomicInteger currentUserCount) {
-		Server.currentUserCount = currentUserCount;
 	}
 
 
@@ -56,17 +63,16 @@ public class Server {
 	    		exitWithErrorMsg(ServerConstant.fILE_NOT_EXSIST);
 	    	}
 	    	
+	    	 //new a dictionary service and pass the file path to it
 	    	dictionaryService=new DictionaryService(filePath);
 	    	
-	    }catch(NumberFormatException numberFormatException) {
+	    } catch(NumberFormatException numberFormatException) {
 	    	exitWithErrorMsg(ServerConstant.PORT_NUMBER_INCORRECT_FORMAT);
 	    }catch(PortOutOfRangeException portOutOfRangeException) {
 	    	exitWithErrorMsg(ServerConstant.PORT_NUMBER_INCORRECT_RANGE);
 	    }
 	    
-	  //new a dictionary service and pass the file path to it
-    	
-    	ServerUI serverUI=new ServerUI(dictionaryService);
+    	serverUI=new ServerUI(dictionaryService);
  	    serverUI.start();
  	    
  	    dictionaryService.setServerUI(serverUI); //pass server UI to service (for updating UI)
@@ -78,18 +84,26 @@ public class Server {
 			System.out.println("Server is ready to receive connection!");
 			while(true) {
 				Socket clientSocket=serverSocket.accept(); // wait and accept a connection
-				ClientConnectionHandler clientConnectionHandler=new ClientConnectionHandler(clientSocket);
+				String userId = UUID.randomUUID().toString().substring(0, 8);
+				ClientConnectionHandler clientConnectionHandler=new ClientConnectionHandler(clientSocket,userId);
+				userHandlers.put(userId, clientConnectionHandler);//add the user id and connection to map
 				clientConnectionHandler.setDictionaryService(dictionaryService);
 				clientConnectionHandler.setServerUI(serverUI);
 				Thread t = new Thread(clientConnectionHandler); //when the connection is established, create a new thread for that client
                 t.start(); //start the thread
-                currentUserCount.incrementAndGet(); //add the user count
-                serverUI.updateUserCount(currentUserCount.get());
+                currentUserCount.incrementAndGet();
+                serverUI.updateUserCount(currentUserCount.get());//update the user count in UI
+               
+                Set<String> connectedUserIds = userHandlers.keySet();
+                serverUI.refreshUsers(new HashSet<>(connectedUserIds)); 
 			}
-		} catch (IOException e) {
+		} catch (BindException e) {
+	        //check if there is already a server running
+	        System.out.println("Port " + portNum + " is already in use. Server might already be running.");
+	        JOptionPane.showMessageDialog(null, "The server is already running!", "Error", JOptionPane.ERROR_MESSAGE);
+	        System.exit(1);
+	    }catch (IOException e) {
 			System.out.println("IOException occurred: " + e.getMessage());
-			currentUserCount.decrementAndGet(); //decrease the user count
-            serverUI.updateUserCount(currentUserCount.get());
 		}finally {
 			try {
 				serverSocket.close();
@@ -109,4 +123,37 @@ public class Server {
 		System.exit(1);
 	}
 
+	/**
+	 * remove client connection(either when server manually remove or client actively remove)
+	 * @param userId the id of the user to be removed
+	 * @param clientDisconnects true if the client actively disconnects
+	 */
+	public static synchronized void removeConnection(String userId,boolean clientDisconnects) {
+        ClientConnectionHandler handler=userHandlers.get(userId);
+        if (handler == null) {
+            System.out.println("Cannot find handler for userId: " + userId);
+            return;
+        }
+        
+        //check whether client actively disconnects or the server choose to disconnect the client
+        if(clientDisconnects) {
+        	try {
+                handler.getClientSocket().close();
+            } catch (IOException e) {
+                System.out.println("Socket already closed for userId: " + userId);
+            }
+        }else {
+        	try {
+    			handler.getOutputStream().writeUTF("SERVER_SHUTDOWN");
+    	        handler.getOutputStream().flush();
+    			handler.getClientSocket().close();
+    		} catch (IOException e) {
+    			System.out.println("Client connection remove failed!");
+    		} 
+        }
+		
+		userHandlers.remove(userId);
+        serverUI.refreshUsers(new HashSet<>(userHandlers.keySet())); 
+        
+    }
 }

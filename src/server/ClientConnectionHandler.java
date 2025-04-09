@@ -5,17 +5,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.spi.AbstractResourceBundleProvider;
-
 import com.google.gson.Gson;
-
 import constants.DictionaryConstant;
 import dtos.ClientRequestDTO;
 import dtos.ServerResponseDTO;
 import entities.DictWord;
-import enums.OperationType;
 import services.DictionaryService;
 
 /**
@@ -28,16 +22,43 @@ public class ClientConnectionHandler implements Runnable {
 	private Gson gson = new Gson();
 	private DictionaryService dictionaryService;
 	private ServerUI serverUI;
+	private String userId;
 
+	/**
+	 * get client socket
+	 * @return
+	 */
+	public Socket getClientSocket() {
+		return clientSocket;
+	}
+
+	/**
+	 * set client socket
+	 * @param clientSocket
+	 */
+	public void setClientSocket(Socket clientSocket) {
+		this.clientSocket = clientSocket;
+	}
+
+	/**
+	 * set server UI
+	 * @param serverUI
+	 */
 	public void setServerUI(ServerUI serverUI) {
 		this.serverUI = serverUI;
 	}
 
-	public ClientConnectionHandler(Socket socket) {
+	/**
+	 * Constructor
+	 * @param socket client socket
+	 * @param userId current user id
+	 */
+	public ClientConnectionHandler(Socket socket,String userId) {
 		this.clientSocket = socket;
 		try {
 			is = new DataInputStream(clientSocket.getInputStream());
 			os = new DataOutputStream(clientSocket.getOutputStream());
+			this.userId=userId;
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		}
@@ -55,9 +76,11 @@ public class ClientConnectionHandler implements Runnable {
 		// keep reading the information send by the client
 
 		try {
+			sendUserIdToClient();//send current user ID to client
 			while (true) {
 				//read client's message from channel and transfer Json to ClientRequestDTO class
 				String clientRequest = is.readUTF();
+				
 				ClientRequestDTO clientRequestDTO = gson.fromJson(clientRequest, ClientRequestDTO.class);
 				System.out.println("server received the request:" + clientRequestDTO.toString());
 				
@@ -115,6 +138,8 @@ public class ClientConnectionHandler implements Runnable {
 			System.out.println("Client disconnected: " + socketException.getMessage());
 			Server.currentUserCount.decrementAndGet();//decrease user count
 			serverUI.updateUserCount(Server.currentUserCount.get());
+			
+			Server.removeConnection(userId,true);
 		} catch (IOException ioException) {
 			System.out.println("IOException occurred: " + ioException.getMessage());
 		} finally {
@@ -129,6 +154,16 @@ public class ClientConnectionHandler implements Runnable {
 			}
 		}
 
+	}
+	
+	private void sendUserIdToClient() throws IOException {
+		synchronized (os) {
+			os.writeUTF(String.valueOf(userId));
+		}
+	}
+	
+	public DataOutputStream getOutputStream() {
+	    return os;
 	}
 
 }
