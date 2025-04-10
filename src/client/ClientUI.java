@@ -14,6 +14,11 @@ import dtos.ClientRequestDTO;
 import dtos.ServerResponseDTO;
 import enums.OperationType;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
@@ -36,7 +41,7 @@ public class ClientUI {
 	private JTextField textFieldInputWord;
 	private JTextArea textAreaResult;
 	private JLabel lblNewMeaning;
-	private JTextArea textAreaNewMeaningInput;
+	private JTextField textFieldNewMeaningInput;
 	private JPanel panelNewMeaning;
 	private JPanel panelOldMeaning;
 	private JPanel panelResult;
@@ -44,7 +49,7 @@ public class ClientUI {
 	private JPanel panelParent;
 	private JPanel panelMeaning;
 	private JTextArea textAreaMeanings;
-	private JTextArea textAreaOldMeaningInput;
+	private JTextField textFieldOldMeaningInput;
 	
 	private OperationType currentOperationType=OperationType.SEARCH_WORD;
 	private JPanel panelMeaningsInput;
@@ -136,6 +141,8 @@ public class ClientUI {
 				btnOperation.setText(DictionaryConstant.TEXT_ADD_WORD);
 				currentOperationType=OperationType.ADD_WORD;
 				addWordPanelLayout();
+				textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
+			    textAreaMeaningsInput.setForeground(Color.GRAY);
 			}
 		});
 		cleanButtonLayout(tglbtnAddWord);
@@ -212,11 +219,11 @@ public class ClientUI {
 		JLabel lblOldMeaning = new JLabel("Old Meaning:");
 		lblOldMeaning.setFont(new Font("Calibri", Font.BOLD, 20));
 		
-		textAreaOldMeaningInput = new JTextArea();
-		textAreaOldMeaningInput.setFont(new Font("Calibri", Font.PLAIN, 20));
-		textAreaOldMeaningInput.setBackground(new Color(243, 243, 243));
-		textAreaOldMeaningInput.setEditable(true);
-		textAreaOldMeaningInput.setBorder(new LineBorder(Color.BLACK));
+		textFieldOldMeaningInput = new JTextField();
+		textFieldOldMeaningInput.setFont(new Font("Calibri", Font.PLAIN, 20));
+		textFieldOldMeaningInput.setBackground(new Color(243, 243, 243));
+		textFieldOldMeaningInput.setEditable(true);
+		textFieldOldMeaningInput.setBorder(new LineBorder(Color.BLACK));
 		
 		
 		GroupLayout gl_panelOldMeaning = new GroupLayout(panelOldMeaning);
@@ -226,8 +233,8 @@ public class ClientUI {
 					.addGap(80)
 					.addComponent(lblOldMeaning, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(textAreaOldMeaningInput, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(160, Short.MAX_VALUE))
+					.addComponent(textFieldOldMeaningInput, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(180, Short.MAX_VALUE))
 		);
 		gl_panelOldMeaning.setVerticalGroup(
 			gl_panelOldMeaning.createParallelGroup(Alignment.LEADING)
@@ -235,7 +242,7 @@ public class ClientUI {
 					.addGap(10)
 					.addGroup(gl_panelOldMeaning.createParallelGroup(Alignment.LEADING, false)
 						.addComponent(lblOldMeaning, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textAreaOldMeaningInput, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(textFieldOldMeaningInput, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)))
 		);
 		panelOldMeaning.setLayout(gl_panelOldMeaning);
 		
@@ -246,11 +253,11 @@ public class ClientUI {
 		lblNewMeaning.setFont(new Font("Calibri", Font.BOLD, 20));
 		
 		//new meaning text box
-		textAreaNewMeaningInput = new JTextArea();
-		textAreaNewMeaningInput.setFont(new Font("Calibri", Font.PLAIN, 20));
-		textAreaNewMeaningInput.setBackground(new Color(243, 243, 243));
-		textAreaNewMeaningInput.setBorder(new LineBorder(Color.BLACK));
-		textAreaNewMeaningInput.setBorder(new LineBorder(Color.BLACK));
+		textFieldNewMeaningInput = new JTextField();
+		textFieldNewMeaningInput.setFont(new Font("Calibri", Font.PLAIN, 20));
+		textFieldNewMeaningInput.setBackground(new Color(243, 243, 243));
+		textFieldNewMeaningInput.setBorder(new LineBorder(Color.BLACK));
+		textFieldNewMeaningInput.setBorder(new LineBorder(Color.BLACK));
 		
 		
 		GroupLayout gl_panelNewMeaning = new GroupLayout(panelNewMeaning);
@@ -260,19 +267,17 @@ public class ClientUI {
 					.addGap(80)
 					.addComponent(lblNewMeaning, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(textAreaNewMeaningInput, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+					.addComponent(textFieldNewMeaningInput, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(180, Short.MAX_VALUE))
 		);
 		gl_panelNewMeaning.setVerticalGroup(
 			gl_panelNewMeaning.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelNewMeaning.createSequentialGroup()
 					.addGap(10)
-					.addComponent(lblNewMeaning, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addGap(71, 71, Short.MAX_VALUE))
-				.addGroup(gl_panelNewMeaning.createSequentialGroup()
-					.addGap(10)
-					.addComponent(textAreaNewMeaningInput, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(10, Short.MAX_VALUE))
+					.addGroup(gl_panelNewMeaning.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNewMeaning, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textFieldNewMeaningInput, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(21, Short.MAX_VALUE))
 		);
 		panelNewMeaning.setLayout(gl_panelNewMeaning);
 		
@@ -327,18 +332,18 @@ public class ClientUI {
 				.addGroup(gl_panelResult.createSequentialGroup()
 					.addGap(80)
 					.addComponent(lblResult, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(textAreaResult, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(160, Short.MAX_VALUE))
+					.addContainerGap(180, Short.MAX_VALUE))
 		);
 		gl_panelResult.setVerticalGroup(
 			gl_panelResult.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panelResult.createSequentialGroup()
-					.addContainerGap(37, Short.MAX_VALUE)
-					.addGroup(gl_panelResult.createParallelGroup(Alignment.TRAILING)
+					.addContainerGap(10, Short.MAX_VALUE)
+					.addGroup(gl_panelResult.createParallelGroup(Alignment.BASELINE)
 						.addComponent(textAreaResult, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblResult, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-					.addGap(20))
+					.addGap(15))
 		);
 		panelResult.setLayout(gl_panelResult);
 		
@@ -409,26 +414,38 @@ public class ClientUI {
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
 							return;
 						}
+						//remove empty lines
+						String[] lines = meanings.split("\n");
+						List<String> nonEmptyLines = new ArrayList<>();
+
+						for (String line : lines) {
+						    // Add the line if it's not blank or empty
+						    if (!line.isBlank() && !line.isEmpty()) {
+						        nonEmptyLines.add(line);
+						    }
+						}
+						String cleanedMeanings = String.join("\n", nonEmptyLines);
+						
 						//set the meanings in DTO
-						clientRequestDTO.setMeanings(textAreaMeaningsInput.getText());
+						clientRequestDTO.setMeanings(cleanedMeanings);
 						break;
 						
 					}
 					case ADD_MEANING:{
 						//if the new meaning box in empty, show failed on UI without send the request to server
-						String newMeaning=textAreaNewMeaningInput.getText();
+						String newMeaning=textFieldNewMeaningInput.getText();
 						if(newMeaning==null || newMeaning.isEmpty()) {
 							clearAllText();
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
 							return;
 						}
-						clientRequestDTO.setNewMeaning(textAreaNewMeaningInput.getText());
+						clientRequestDTO.setNewMeaning(textFieldNewMeaningInput.getText());
 						break;
 					}
 					case UPDATE_MEANING:{
 						//if the old meaning or new meaning box in empty, show failed on UI without send the request to server
-						String oldMeaning=textAreaOldMeaningInput.getText();
-						String newMeaning=textAreaNewMeaningInput.getText();
+						String oldMeaning=textFieldOldMeaningInput.getText();
+						String newMeaning=textFieldNewMeaningInput.getText();
 						if(newMeaning==null || newMeaning.isEmpty()||oldMeaning==null || oldMeaning.isEmpty()) {
 							clearAllText();
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
@@ -440,8 +457,8 @@ public class ClientUI {
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_SAME);
 							return;
 						}
-						clientRequestDTO.setOldMeaning(textAreaOldMeaningInput.getText());
-						clientRequestDTO.setNewMeaning(textAreaNewMeaningInput.getText());
+						clientRequestDTO.setOldMeaning(textFieldOldMeaningInput.getText());
+						clientRequestDTO.setNewMeaning(textFieldNewMeaningInput.getText());
 						break;
 					}
 					default:
@@ -517,10 +534,39 @@ public class ClientUI {
 		lblMeaningsInput.setFont(new Font("Calibri", Font.BOLD, 20));
 		
 		textAreaMeaningsInput = new JTextArea();
-		textAreaMeaningsInput.setText("");
+		textAreaMeaningsInput.setToolTipText("");
+		textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
+		textAreaMeaningsInput.setForeground(Color.GRAY);
+		textAreaMeaningsInput.setWrapStyleWord(true); // Ensure words are wrapped properly
+		textAreaMeaningsInput.setLineWrap(true);
+		
 		textAreaMeaningsInput.setFont(new Font("Calibri", Font.PLAIN, 20));
 		textAreaMeaningsInput.setBorder(new LineBorder(Color.BLACK));
 		textAreaMeaningsInput.setBackground(new Color(243, 243, 243));
+		textAreaMeaningsInput.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                // Clear the placeholder text when the user clicks
+                if (textAreaMeaningsInput.getText().equals("Please enter the meanings here with each new meaning on a new line.")) {
+                    textAreaMeaningsInput.setText("");
+                    textAreaMeaningsInput.setForeground(Color.BLACK); // Set text color back to black
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // Restore the placeholder text when the user leaves the field empty
+                if (textAreaMeaningsInput.getText().isEmpty()) {
+                    textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
+                    textAreaMeaningsInput.setWrapStyleWord(true); // Ensure words are wrapped properly
+                    textAreaMeaningsInput.setLineWrap(true);
+                    textAreaMeaningsInput.setForeground(Color.GRAY); // Set placeholder color
+                }
+            }
+        });
+		
+		
+		
 		GroupLayout gl_panelMeaningsInput = new GroupLayout(panelMeaningsInput);
 		gl_panelMeaningsInput.setHorizontalGroup(
 			gl_panelMeaningsInput.createParallelGroup(Alignment.LEADING)
@@ -552,12 +598,17 @@ public class ClientUI {
 		frmClient.getContentPane().setLayout(groupLayout);
 		
 		
-		
-		lblNewMeaning = new JLabel("New Meaning:");
-		lblNewMeaning.setFont(new Font("宋体", Font.PLAIN, 20));
+
 	
 		//make the search layout the default when the UI starts
 		searchWordPanelLayout();
+		textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
+	    textAreaMeaningsInput.setForeground(Color.GRAY);
+	    textAreaMeaningsInput.setWrapStyleWord(true); // Ensure words are wrapped properly
+	    textAreaMeaningsInput.setLineWrap(true);
+		
+		System.out.println(textAreaMeaningsInput.getText());
+		
 
 	}
 	
@@ -602,6 +653,7 @@ public class ClientUI {
 	
 	private void addWordPanelLayout() {
 		setPanelParentContent(panelWord, panelMeaningsInput, panelResult);
+		
 	}
 	
 	private void deleteWordPanelLayout() {
@@ -634,10 +686,10 @@ public class ClientUI {
 		    textAreaResult.setText("");
 		if (textAreaMeanings != null)
 		    textAreaMeanings.setText("");
-		if (textAreaNewMeaningInput != null)
-		    textAreaNewMeaningInput.setText("");
-		if (textAreaOldMeaningInput != null)
-		    textAreaOldMeaningInput.setText("");
+		if (textFieldNewMeaningInput != null)
+		    textFieldNewMeaningInput.setText("");
+		if (textFieldOldMeaningInput != null)
+		    textFieldOldMeaningInput.setText("");
 		if (textAreaMeaningsInput != null)
 		    textAreaMeaningsInput.setText("");
 	}

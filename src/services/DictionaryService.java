@@ -57,7 +57,9 @@ public class DictionaryService {
 			Reader reader=new FileReader(filePath);
 			Type type = new TypeToken<Map<String, List<String>>>() {}.getType();
 			Map<String, List<String>> map = gson.fromJson(reader, type);
-		    this.dictionary = new ConcurrentHashMap<>(map); 
+			if(map != null && !map.isEmpty()) {
+				this.dictionary = new ConcurrentHashMap<>(map); 
+			}
 		    reader.close();
 
 		} catch (FileNotFoundException e) {

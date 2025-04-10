@@ -63,11 +63,20 @@ public class Server {
 	    	}
 	    	
 	    	dictFileName=args[1];//get the dictionary file name from command line
-	    	String filePath="src/"+dictFileName;
+	    	//make sure the file name is in correct format
+	    	int dotIndex = dictFileName.lastIndexOf(".");
+	    	if (dotIndex != -1) {
+	    	    dictFileName = dictFileName.substring(0, dotIndex);
+	    	}
+	    	String filePath=dictFileName+".json";
 	    	File dictFile=new File(filePath);
-	    	//if the dictionary file does not exist, exit the program
+	    	//if the dictionary file does not exist, create the dictionary file
 	    	if(!dictFile.exists()) {
-	    		exitWithErrorMsg(ServerConstant.FILE_NOT_EXIST);
+    	        try {
+					dictFile.createNewFile();
+				} catch (IOException e) {
+					System.out.println("IOException occurred: " + e.getMessage());
+				} 
 	    	}
 	    	
 	    	 //new a dictionary service and pass the file path to it
