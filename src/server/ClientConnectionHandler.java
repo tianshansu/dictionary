@@ -26,7 +26,7 @@ public class ClientConnectionHandler implements Runnable {
 
 	/**
 	 * get client socket
-	 * @return
+	 * @return clientSocket
 	 */
 	public Socket getClientSocket() {
 		return clientSocket;
@@ -34,7 +34,7 @@ public class ClientConnectionHandler implements Runnable {
 
 	/**
 	 * set client socket
-	 * @param clientSocket
+	 * @param clientSocket clientSocket
 	 */
 	public void setClientSocket(Socket clientSocket) {
 		this.clientSocket = clientSocket;
@@ -42,10 +42,18 @@ public class ClientConnectionHandler implements Runnable {
 
 	/**
 	 * set server UI
-	 * @param serverUI
+	 * @param serverUI serverUI
 	 */
 	public void setServerUI(ServerUI serverUI) {
 		this.serverUI = serverUI;
+	}
+	
+	/**
+	 * get data output stream
+	 * @return output stream
+	 */
+	public DataOutputStream getOutputStream() {
+	    return os;
 	}
 
 	/**
@@ -60,10 +68,14 @@ public class ClientConnectionHandler implements Runnable {
 			os = new DataOutputStream(clientSocket.getOutputStream());
 			this.userId=userId;
 		} catch (IOException ioException) {
-			ioException.printStackTrace();
+			System.out.println("IOException occurred: " + ioException.getMessage());
 		}
 	}
 
+	/**
+	 * set dictionary service
+	 * @param dictionaryService dictionaryService
+	 */
 	public void setDictionaryService(DictionaryService dictionaryService) {
 		this.dictionaryService = dictionaryService;
 	}
@@ -162,8 +174,6 @@ public class ClientConnectionHandler implements Runnable {
 		}
 	}
 	
-	public DataOutputStream getOutputStream() {
-	    return os;
-	}
+	
 
 }

@@ -1,5 +1,8 @@
 package enums;
 
+/**
+ * Operation types
+ */
 public enum OperationType {
     SEARCH_WORD,
 	ADD_WORD,

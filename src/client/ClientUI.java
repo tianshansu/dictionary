@@ -52,6 +52,16 @@ public class ClientUI {
 	private JTextArea textAreaMeaningsInput;
 	private JTextField textFieldUserId;
 
+	
+	/**
+	 * get current frame (to display warning message above)
+	 * @return Jframe
+	 */
+	public JFrame getFrame() {
+        return frmClient;
+    }
+	
+	
 	/**
 	 * Launch the application.
 	 */

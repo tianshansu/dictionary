@@ -5,8 +5,20 @@ import java.io.*;
 import constants.*;
 import exceptions.*;
 
+/**
+ * Client Class
+ * Validates command-line arguments, creates a socket connection to the server
+ * Initializes the UI, and starts a thread for handling socket communication
+ */
 public class Client {
 
+	/**
+	 * The entry point of the client application
+	 * checks the validity of command-line arguments (server address and port),
+	 * establishes a socket connection to the server, initializes the UI, and starts
+	 * a separate thread for handling socket communication.
+	 * @param args args[0]:server address; args[1]:port number
+	 */
 	public static void main(String[] args) {
 		
 	    Socket s1;

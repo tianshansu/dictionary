@@ -58,7 +58,7 @@ public class ClientSocketHandler implements Runnable {
 
 				//if server sends out shut down request, exit
 				if ("SERVER_SHUTDOWN".equals(serverResponse)) {
-				    JOptionPane.showMessageDialog(null, "Server has disconnected you.");
+				    JOptionPane.showMessageDialog(clientUI.getFrame(), "Server has disconnected you.");
 				    System.exit(0);
 				    break;
 				}
@@ -69,7 +69,7 @@ public class ClientSocketHandler implements Runnable {
 		
 	    } catch (SocketException socketException) {
 	        System.out.println("Server shuts down.");
-	        JOptionPane.showMessageDialog(null, "The Server is closed");
+	        JOptionPane.showMessageDialog(clientUI.getFrame(), "The Server is closed");
 	    } catch (IOException ioException) {
 	    	ioException.printStackTrace();
 		}finally {

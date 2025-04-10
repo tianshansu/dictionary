@@ -32,7 +32,7 @@ public class ServerResponseDTO {
 	
 	/**
 	 * get status code
-	 * @return code
+	 * @return code status code
 	 */
 	public int getCode() {
 		return code;
@@ -40,7 +40,7 @@ public class ServerResponseDTO {
 	
 	/**
 	 * get content list (meaning list)
-	 * @return
+	 * @return meaning list (list)
 	 */
 	public List<String> getContentList() {
 		return contentList;

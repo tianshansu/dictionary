@@ -35,6 +35,13 @@ public class Server {
 	}
 
 
+	/**
+	 * The entry point of the server application
+	 * This method checks and parses command-line arguments (port number and dictionary file)
+	 * initializes the dictionary service and server UI, and listens for client connections
+	 * Each accepted client connection is handled in a separate thread
+	 * @param args args[0]:port number; args[1]:dictionary file name
+	 */
 	public static void main(String[] args){
 		ServerSocket serverSocket=null;
 		int portNum=0;
@@ -60,7 +67,7 @@ public class Server {
 	    	File dictFile=new File(filePath);
 	    	//if the dictionary file does not exist, exit the program
 	    	if(!dictFile.exists()) {
-	    		exitWithErrorMsg(ServerConstant.fILE_NOT_EXSIST);
+	    		exitWithErrorMsg(ServerConstant.FILE_NOT_EXIST);
 	    	}
 	    	
 	    	 //new a dictionary service and pass the file path to it
@@ -119,7 +126,7 @@ public class Server {
 	 * @param msg error message
 	 */
 	private static void exitWithErrorMsg(String msg) {
-		JOptionPane.showMessageDialog(null, msg,"Error",JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(serverUI.getFrame(), msg,"Error",JOptionPane.ERROR_MESSAGE);
 		System.exit(1);
 	}
 

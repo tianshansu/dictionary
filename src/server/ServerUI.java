@@ -36,7 +36,7 @@ import java.awt.Component;
  */
 public class ServerUI {
 	private DictionaryService dictionaryService;
-	private JFrame frmClient;
+	private JFrame frmServer;
 	private JPanel panelParent;
 	private JTextField textFieldCurrentUserCount;
 	private JPanel panelUserCount;
@@ -48,6 +48,17 @@ public class ServerUI {
 	private JScrollPane scrollPaneUsers;
 	private JTable tableUsers;
 
+	
+	/**
+	 * get current frame (to display warning message above)
+	 * @return Jframe
+	 */
+	public JFrame getFrame() {
+        return frmServer;
+    }
+	
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -55,9 +66,9 @@ public class ServerUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frmClient.setVisible(true);
+					frmServer.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					System.out.println("Server UI cannot be loaded!");
 				}
 			}
 		});
@@ -75,13 +86,13 @@ public class ServerUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frmClient = new JFrame();
-		frmClient.getContentPane().setBackground(Color.WHITE);
-		frmClient.setType(Type.UTILITY);
-		frmClient.setTitle("Client");
-		frmClient.setBackground(Color.WHITE);
-		frmClient.setBounds(100, 100, 924, 684);
-		frmClient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmServer = new JFrame();
+		frmServer.getContentPane().setBackground(Color.WHITE);
+		frmServer.setType(Type.UTILITY);
+		frmServer.setTitle("Client");
+		frmServer.setBackground(Color.WHITE);
+		frmServer.setBounds(100, 100, 924, 684);
+		frmServer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JLabel lblServer = new JLabel("Server");
 		lblServer.setFont(new Font("Arial", Font.PLAIN, 30));
@@ -132,7 +143,7 @@ public class ServerUI {
 		group.add(tglbtnUsers);
 
 		panelParent = new JPanel();
-		GroupLayout groupLayout = new GroupLayout(frmClient.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmServer.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -330,7 +341,7 @@ public class ServerUI {
 		});
 		scrollPaneUsers.setViewportView(tableUsers);
 		panelUsers.setLayout(gl_panelUsers);
-		frmClient.getContentPane().setLayout(groupLayout);
+		frmServer.getContentPane().setLayout(groupLayout);
 
 		//set the overview layout to be the default layout
 		overviewLayout();
@@ -390,7 +401,11 @@ public class ServerUI {
 		        data,
 		        columnNames
 		    ) {
-		        boolean[] columnEditables = new boolean[] {
+		        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+				boolean[] columnEditables = new boolean[] {
 		            false, false
 		        };
 
@@ -452,7 +467,11 @@ public class ServerUI {
 		        data,
 		        columnNames
 		    ) {
-		        boolean[] columnEditables = new boolean[] {
+		        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+				boolean[] columnEditables = new boolean[] {
 		            false, false
 		        };
 
