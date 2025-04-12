@@ -120,7 +120,7 @@ public class Server {
 		} catch (BindException e) {
 	        //check if there is already a server running
 	        System.out.println("Port " + portNum + " is already in use. Server might already be running.");
-	        JOptionPane.showMessageDialog(null, "The server is already running!", "Error", JOptionPane.ERROR_MESSAGE);
+	        JOptionPane.showMessageDialog(serverUI.getFrame(), "The server is already running!", "Error", JOptionPane.ERROR_MESSAGE);
 	        System.exit(1);
 	    }catch (IOException e) {
 			System.out.println("IOException occurred: " + e.getMessage());

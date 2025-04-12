@@ -20,6 +20,8 @@ import enums.OperationType;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -397,7 +399,7 @@ public class ClientUI {
 		//main logic (when the main button is pressed, use a clientRequestDTO to encapsulate the request and send to server  
 		btnOperation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String word=textFieldInputWord.getText();
+				String word=textFieldInputWord.getText().replaceAll("\\s+", "");//remove all space in word(to prevent the user copy and paste space into the word)
 				//send request to server only if the word is in input box
 				if(word==null||word.isEmpty()) {
 					clearAllText();
@@ -424,7 +426,7 @@ public class ClientUI {
 						for (String line : lines) {
 						    // Add the line if it's not blank or empty
 						    if (!line.isBlank() && !line.isEmpty()) {
-						        nonEmptyLines.add(line);
+						        nonEmptyLines.add(line.trim());
 						    }
 						}
 						String cleanedMeanings = String.join("\n", nonEmptyLines);
@@ -436,19 +438,19 @@ public class ClientUI {
 					}
 					case ADD_MEANING:{
 						//if the new meaning box in empty, show failed on UI without send the request to server
-						String newMeaning=textFieldNewMeaningInput.getText();
+						String newMeaning=textFieldNewMeaningInput.getText().trim();//remove the space before and after the sentences
 						if(newMeaning==null || newMeaning.isEmpty()) {
 							clearAllText();
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
 							return;
 						}
-						clientRequestDTO.setNewMeaning(textFieldNewMeaningInput.getText());
+						clientRequestDTO.setNewMeaning(newMeaning);
 						break;
 					}
 					case UPDATE_MEANING:{
 						//if the old meaning or new meaning box in empty, show failed on UI without send the request to server
-						String oldMeaning=textFieldOldMeaningInput.getText();
-						String newMeaning=textFieldNewMeaningInput.getText();
+						String oldMeaning=textFieldOldMeaningInput.getText().trim();//remove the space before and after the sentences
+						String newMeaning=textFieldNewMeaningInput.getText().trim();//remove the space before and after the sentences
 						if(newMeaning==null || newMeaning.isEmpty()||oldMeaning==null || oldMeaning.isEmpty()) {
 							clearAllText();
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_EMPTY);
@@ -460,8 +462,8 @@ public class ClientUI {
 							textAreaResult.setText(DictionaryConstant.MEANING_CANNOT_BE_SAME);
 							return;
 						}
-						clientRequestDTO.setOldMeaning(textFieldOldMeaningInput.getText());
-						clientRequestDTO.setNewMeaning(textFieldNewMeaningInput.getText());
+						clientRequestDTO.setOldMeaning(oldMeaning);
+						clientRequestDTO.setNewMeaning(newMeaning);
 						break;
 					}
 					default:
@@ -501,6 +503,14 @@ public class ClientUI {
 		textFieldInputWord.setBackground(new Color(243, 243, 243));
 		textFieldInputWord.setColumns(10);
 		textFieldInputWord.setBorder(new LineBorder(Color.BLACK,2));
+		textFieldInputWord.addKeyListener(new KeyAdapter() {
+		    @Override
+		    public void keyTyped(KeyEvent e) {
+		        if (Character.isWhitespace(e.getKeyChar())) {
+		            e.consume(); //prevent the user to input space into the word
+		        }
+		    }
+		});
 		
 		
 		

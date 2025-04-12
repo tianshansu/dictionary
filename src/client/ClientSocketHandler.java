@@ -9,6 +9,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Locale;
+
 import javax.swing.JOptionPane;
 import com.google.gson.Gson;
 import dtos.ClientRequestDTO;
@@ -23,6 +25,7 @@ public class ClientSocketHandler implements Runnable {
 	private DataInputStream is;
 	private DataOutputStream os;
 	private Gson gson = new Gson();
+	
 
 	/**
 	 * constructor

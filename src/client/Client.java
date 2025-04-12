@@ -5,6 +5,7 @@
 package client;
 
 import java.net.*;
+import java.util.Locale;
 import java.io.*;
 import constants.*;
 import exceptions.*;
@@ -28,6 +29,8 @@ public class Client {
 	    Socket s1;
 	    int portNum=0;
 	    String serverAddr="";
+	  //set environment to English(for display error msg)
+	  	Locale.setDefault(Locale.US);
 	    
 	    // Check whether the argument is correct (both content and format)
 	    if(args.length != 2) {
