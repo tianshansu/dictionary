@@ -139,7 +139,12 @@ public class Server {
 	 * @param msg error message
 	 */
 	private static void exitWithErrorMsg(String msg) {
-		JOptionPane.showMessageDialog(serverUI.getFrame(), msg,"Error",JOptionPane.ERROR_MESSAGE);
+		if(serverUI!=null) {
+			JOptionPane.showMessageDialog(serverUI.getFrame(), msg,"Error",JOptionPane.ERROR_MESSAGE);
+		}else {
+			JOptionPane.showMessageDialog(null, msg,"Error",JOptionPane.ERROR_MESSAGE);
+		}
+		
 		System.exit(1);
 	}
 

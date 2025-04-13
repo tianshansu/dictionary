@@ -21,5 +21,5 @@ public class ClientConstant {
     public static String SERVER_ADDRESS_INCORRECT = "The server address is incorrect!";
 
     /** Error message for when the server address cannot be connected. */
-    public static String SERVER_ADDRESS_UNAVAILABLE = "The server address is unavailable!";
+    public static String SERVER_ADDRESS_UNAVAILABLE = "Cannot connect to the server. Please check if the server is running and the address/port are correct.";
 }

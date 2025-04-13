@@ -189,7 +189,7 @@ public class ServerUI {
 		JLabel lblCurrentUserCount = new JLabel("Current User Count:");
 		lblCurrentUserCount.setFont(new Font("Calibri", Font.BOLD, 20));
 		
-		JLabel lblCurrentWordsCount = new JLabel("Current Words Count:");
+		JLabel lblCurrentWordsCount = new JLabel("Current Word Count:");
 		lblCurrentWordsCount.setFont(new Font("Calibri", Font.BOLD, 20));
 		
 		textFieldCurrentWordsCount = new JTextField();

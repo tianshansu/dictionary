@@ -6,6 +6,9 @@ package client;
 
 import java.net.*;
 import java.util.Locale;
+
+import javax.swing.JOptionPane;
+
 import java.io.*;
 import constants.*;
 import exceptions.*;
@@ -29,12 +32,14 @@ public class Client {
 	    Socket s1;
 	    int portNum=0;
 	    String serverAddr="";
-	  //set environment to English(for display error msg)
+	    ClientUI clientUI;
+	    //set environment to English(for display error msg)
 	  	Locale.setDefault(Locale.US);
 	    
 	    // Check whether the argument is correct (both content and format)
 	    if(args.length != 2) {
-	    	exitWithErrorMsg(ClientConstant.ARGUMENT_INCORRECT_LENGTH);
+	    	JOptionPane.showMessageDialog(null, ClientConstant.ARGUMENT_INCORRECT_LENGTH,"Error",JOptionPane.ERROR_MESSAGE);
+	    	System.exit(1);
 	    }
 	    try {
 	    	serverAddr=args[0];
@@ -42,14 +47,17 @@ public class Client {
 		    
 	    	portNum=Integer.parseInt(args[1]); 
 	    	if(portNum<1024 || portNum>65535) {
-	    		throw new PortOutOfRangeException(ClientConstant.PORT_NUMBER_INCORRECT_RANGE);
+	    		throw new PortOutOfRangeException();
 	    	}
 	    }catch(NumberFormatException numberFormatException) {
-	    	exitWithErrorMsg(ClientConstant.PORT_NUMBER_INCORRECT_FORMAT);
+	    	JOptionPane.showMessageDialog(null, ClientConstant.PORT_NUMBER_INCORRECT_FORMAT,"Error",JOptionPane.ERROR_MESSAGE);
+	    	System.exit(1);
 	    }catch(PortOutOfRangeException portOutOfRangeException) {
-	    	exitWithErrorMsg(ClientConstant.PORT_NUMBER_INCORRECT_RANGE);
+	    	JOptionPane.showMessageDialog(null, ClientConstant.PORT_NUMBER_INCORRECT_RANGE,"Error",JOptionPane.ERROR_MESSAGE);
+	    	System.exit(1);
 	    }catch(UnknownHostException unknownHostException) {
-	    	exitWithErrorMsg(ClientConstant.SERVER_ADDRESS_INCORRECT);
+	    	JOptionPane.showMessageDialog(null, ClientConstant.SERVER_ADDRESS_INCORRECT,"Error",JOptionPane.ERROR_MESSAGE);
+	    	System.exit(1);
 	    }
 	    	
 	    //create client socket and new client socket handler thread and UI
@@ -61,7 +69,7 @@ public class Client {
 	    	ClientSocketHandler clientSocketHandler=new ClientSocketHandler(s1);
 	    	
 	    	//generate the client UI
-	    	ClientUI clientUI=new ClientUI(clientSocketHandler);
+	    	clientUI=new ClientUI(clientSocketHandler);
 	    	clientSocketHandler.setClientUI(clientUI);
 	    	clientUI.start();
 	    	
@@ -70,19 +78,11 @@ public class Client {
 	    	
 	    	
 	    }catch(ConnectException connectException) {
-	    	exitWithErrorMsg(ClientConstant.SERVER_ADDRESS_UNAVAILABLE);
+	    	JOptionPane.showMessageDialog(null, ClientConstant.SERVER_ADDRESS_UNAVAILABLE,"Error",JOptionPane.ERROR_MESSAGE);
+	    	System.exit(1);
 	    }catch (IOException e) {
 	    	System.out.println("IOException occurred: " + e.getMessage());
 		}
-	}
-	
-	/**
-	 * Exit the program with an error message
-	 * @param msg error message
-	 */
-	private static void exitWithErrorMsg(String msg) {
-		System.out.println(msg);
-		System.exit(1);
 	}
 
 }

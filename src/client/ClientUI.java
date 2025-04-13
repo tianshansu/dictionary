@@ -61,6 +61,7 @@ public class ClientUI {
 	private JLabel lblMeaningsInput;
 	private JTextArea textAreaMeaningsInput;
 	private JTextField textFieldUserId;
+	private JTextField txtMeaningsTip;
 
 	
 	/**
@@ -146,8 +147,6 @@ public class ClientUI {
 				btnOperation.setText(DictionaryConstant.TEXT_ADD_WORD);
 				currentOperationType=OperationType.ADD_WORD;
 				addWordPanelLayout();
-				textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
-			    textAreaMeaningsInput.setForeground(Color.GRAY);
 			}
 		});
 		cleanButtonLayout(tglbtnAddWord);
@@ -328,6 +327,8 @@ public class ClientUI {
 		textAreaMeanings.setFont(new Font("Calibri", Font.PLAIN, 20));
 		textAreaMeanings.setBackground(Color.WHITE);
 		textAreaMeanings.setEditable(false);
+		textAreaMeanings.setWrapStyleWord(true); // Ensure words are wrapped properly
+		textAreaMeanings.setLineWrap(true);
 		
 		
 		panelMeaning.setLayout(gl_panelMeaning);
@@ -548,35 +549,19 @@ public class ClientUI {
 		
 		textAreaMeaningsInput = new JTextArea();
 		textAreaMeaningsInput.setToolTipText("");
-		textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
-		textAreaMeaningsInput.setForeground(Color.GRAY);
 		textAreaMeaningsInput.setWrapStyleWord(true); // Ensure words are wrapped properly
 		textAreaMeaningsInput.setLineWrap(true);
 		
 		textAreaMeaningsInput.setFont(new Font("Calibri", Font.PLAIN, 20));
 		textAreaMeaningsInput.setBorder(new LineBorder(Color.BLACK));
 		textAreaMeaningsInput.setBackground(new Color(243, 243, 243));
-		textAreaMeaningsInput.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                // Clear the placeholder text when the user clicks
-                if (textAreaMeaningsInput.getText().equals("Please enter the meanings here with each new meaning on a new line.")) {
-                    textAreaMeaningsInput.setText("");
-                    textAreaMeaningsInput.setForeground(Color.BLACK); // Set text color back to black
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                // Restore the placeholder text when the user leaves the field empty
-                if (textAreaMeaningsInput.getText().isEmpty()) {
-                    textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
-                    textAreaMeaningsInput.setWrapStyleWord(true); // Ensure words are wrapped properly
-                    textAreaMeaningsInput.setLineWrap(true);
-                    textAreaMeaningsInput.setForeground(Color.GRAY); // Set placeholder color
-                }
-            }
-        });
+		
+		txtMeaningsTip = new JTextField();
+		txtMeaningsTip.setFont(new Font("Calibri", Font.PLAIN, 12));
+		txtMeaningsTip.setText("Please enter the meanings here with each new meaning on a new line.");
+		txtMeaningsTip.setEditable(false);
+		txtMeaningsTip.setColumns(10);
+		
 		
 		
 		
@@ -587,20 +572,21 @@ public class ClientUI {
 					.addGap(80)
 					.addComponent(lblMeaningsInput, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(textAreaMeaningsInput, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_panelMeaningsInput.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(txtMeaningsTip, Alignment.LEADING)
+						.addComponent(textAreaMeaningsInput, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE))
 					.addContainerGap(180, Short.MAX_VALUE))
 		);
 		gl_panelMeaningsInput.setVerticalGroup(
 			gl_panelMeaningsInput.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panelMeaningsInput.createSequentialGroup()
+				.addGroup(Alignment.LEADING, gl_panelMeaningsInput.createSequentialGroup()
+					.addGap(10)
 					.addGroup(gl_panelMeaningsInput.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelMeaningsInput.createSequentialGroup()
-							.addGap(10)
-							.addComponent(lblMeaningsInput, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panelMeaningsInput.createSequentialGroup()
-							.addGap(10)
-							.addComponent(textAreaMeaningsInput, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(61, Short.MAX_VALUE))
+						.addComponent(lblMeaningsInput, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+						.addComponent(textAreaMeaningsInput, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtMeaningsTip, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(37, Short.MAX_VALUE))
 		);
 		panelMeaningsInput.setLayout(gl_panelMeaningsInput);
 		panelParent.add(panelOldMeaning);
@@ -611,16 +597,8 @@ public class ClientUI {
 		frmClient.getContentPane().setLayout(groupLayout);
 		
 		
-
-	
 		//make the search layout the default when the UI starts
 		searchWordPanelLayout();
-		textAreaMeaningsInput.setText("Please enter the meanings here with each new meaning on a new line.");
-	    textAreaMeaningsInput.setForeground(Color.GRAY);
-	    textAreaMeaningsInput.setWrapStyleWord(true); // Ensure words are wrapped properly
-	    textAreaMeaningsInput.setLineWrap(true);
-		
-		System.out.println(textAreaMeaningsInput.getText());
 		
 
 	}
