@@ -20,7 +20,8 @@ The server supports concurrent client connections, and clients can search, add, 
 - Java Swing (GUI)
 
 ### Server
-java -jar DictionaryServer.jar <port> <dictionary-file>
+java -jar DictionaryServer.jar &lt;port&gt; &lt;dictionary-file&gt;
 
 ### Client
-java -jar DictionaryClient.jar <server-address> <server-port>
+java -jar DictionaryClient.jar &lt;server-address&gt; &lt;server-port&gt;
+
